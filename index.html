@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#dff3df">
+  <title>Panda's Secret Question</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap');
+    *{box-sizing:border-box} :root{--ink:#183126;--green:#4f8a61;--dark:#386a49;--pale:#edf8eb;--red:#c94b4b}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;overflow:hidden;padding:24px 18px;font-family:Nunito,Arial,sans-serif;color:var(--ink);background:radial-gradient(circle at 15% 20%,#ffffffb5 0 4px,transparent 5px),radial-gradient(circle at 85% 75%,#ffffff8f 0 5px,transparent 6px),linear-gradient(145deg,#eef9e9,#cce8cf 52%,#a9d5b4)}
+    .bamboo{position:fixed;bottom:-20px;width:42px;height:58vh;border-radius:20px 20px 0 0;opacity:.2;background:repeating-linear-gradient(to bottom,#357947 0 68px,#244f33 69px 75px);pointer-events:none}.bamboo:before,.bamboo:after{content:"";position:absolute;width:88px;height:34px;border-radius:100% 0 100% 0;background:#357947}.bamboo:before{top:24%;left:30px;transform:rotate(-28deg)}.bamboo:after{top:48%;right:30px;transform:scaleX(-1) rotate(-28deg)}.bamboo.left{left:4vw;transform:rotate(-5deg)}.bamboo.right{right:5vw;transform:rotate(6deg);height:48vh}
+    .card{position:relative;width:min(100%,430px);padding:36px 32px 30px;text-align:center;border:2px solid #ffffffe6;border-radius:30px;background:#fffdf6f0;box-shadow:0 22px 55px #28553638;backdrop-filter:blur(10px);animation:arrive .55s ease-out both}@keyframes arrive{from{opacity:0;transform:translateY(18px) scale(.98)}}
+    .panda{position:relative;width:126px;height:108px;margin:-6px auto 18px;border:4px solid #202522;border-radius:48% 48% 45% 45%;background:white}.ear{position:absolute;z-index:-1;top:-16px;width:42px;height:42px;border-radius:50%;background:#202522}.ear.left{left:-8px}.ear.right{right:-8px}.eye{position:absolute;top:31px;width:34px;height:43px;border-radius:50%;background:#202522;transform:rotate(18deg)}.eye.left{left:20px}.eye.right{right:20px;transform:rotate(-18deg)}.eye:after{content:"";position:absolute;top:10px;left:11px;width:10px;height:13px;border-radius:50%;background:white}.nose{position:absolute;left:50%;top:63px;width:18px;height:13px;border-radius:50%;background:#202522;transform:translateX(-50%)}.mouth{position:absolute;left:50%;top:76px;width:28px;height:14px;border-bottom:3px solid #202522;border-radius:0 0 50% 50%;transform:translateX(-50%)}
+    .badge{display:inline-block;margin-bottom:10px;padding:6px 12px;border-radius:99px;color:var(--dark);background:#e2f2df;font-size:12px;font-weight:800;letter-spacing:.11em;text-transform:uppercase}h1{margin:0 0 9px;font-size:clamp(25px,7vw,31px);line-height:1.15}.intro{margin:0 0 20px;color:#66756c;font-size:15px}.question{margin:0 0 18px;padding:15px 18px;border-radius:16px;background:var(--pale);font-size:17px;font-weight:800;line-height:1.4}label{display:block;margin:0 0 7px 3px;text-align:left;font-size:13px;font-weight:800}
+    input{width:100%;padding:14px 16px;border:2px solid #d6e5d6;border-radius:13px;outline:none;color:var(--ink);background:white;font:inherit;transition:.2s}input:focus{border-color:var(--green);box-shadow:0 0 0 4px #4f8a611f}button{width:100%;margin-top:13px;padding:14px;border:0;border-radius:13px;color:white;background:var(--green);box-shadow:0 8px 18px #386a4938;font:800 16px Nunito,Arial,sans-serif;cursor:pointer;transition:.18s}button:hover{background:var(--dark);transform:translateY(-2px)}button:active{transform:none}button:disabled{opacity:.65;cursor:wait}#message{min-height:22px;margin-top:14px;font-size:14px;font-weight:700;color:var(--red)}.hint{margin:3px 0 0;color:#829087;font-size:12px}
+    @media(max-width:480px){.card{padding:30px 22px 25px;border-radius:24px}.bamboo{display:none}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="bamboo left" aria-hidden="true"></div><div class="bamboo right" aria-hidden="true"></div>
+  <main class="card">
+    <div class="panda" aria-label="A cute panda face" role="img"><span class="ear left"></span><span class="ear right"></span><span class="eye left"></span><span class="eye right"></span><span class="nose"></span><span class="mouth"></span></div>
+    <span class="badge">Panda Challenge</span>
+    <h1>Tell Panda Your Age! 🐼</h1>
+    <p class="intro">Our little panda is guarding a secret surprise.</p>
+    <p class="question">Enter Your Age?</p>
+    <label for="answer">Your age</label>
+    <input id="answer" type="number" min="1" max="120" inputmode="numeric" placeholder="Enter your age..." autocomplete="off" autofocus>
+    <button id="submitButton" type="button">Continue →</button>
+    <div id="message" role="status" aria-live="polite"></div>
+    <p class="hint">Enter your age to unlock the surprise 🎋</p>
+  </main>
+  <script>
+    // Age is calculated automatically from this birth date: 29/09/2003.
+    const BIRTH_DATE = new Date(2003, 8, 29);
+    const TARGET_URL = "https://hbdezhil.vercel.app/";
+    const answerInput = document.getElementById("answer");
+    const message = document.getElementById("message");
+    const submitButton = document.getElementById("submitButton");
+
+    function getCurrentAge(birthDate){
+      const today=new Date();
+      let age=today.getFullYear()-birthDate.getFullYear();
+      const birthdayNotReached=today.getMonth()<birthDate.getMonth()||(today.getMonth()===birthDate.getMonth()&&today.getDate()<birthDate.getDate());
+      if(birthdayNotReached) age--;
+      return age;
+    }
+
+    function checkAnswer(){
+      const age=Number(answerInput.value);
+      if(!Number.isInteger(age)||age<1||age>120){message.style.color="#c94b4b";message.textContent="Please enter a valid age (1–120) 🐾";answerInput.focus();return}
+      if(age===getCurrentAge(BIRTH_DATE)){
+        message.style.color="#37804d";message.textContent="Correct! Panda is opening the surprise... 🎋";submitButton.disabled=true;
+        setTimeout(()=>{window.location.href=TARGET_URL},700);
+      }else{message.style.color="#c94b4b";message.textContent="Oops! That is not the correct age. Try again 🐼";answerInput.select()}
+    }
+    submitButton.addEventListener("click",checkAnswer);
+    answerInput.addEventListener("keydown",event=>{if(event.key==="Enter")checkAnswer()});
+  </script>
+</body>
+</html>
